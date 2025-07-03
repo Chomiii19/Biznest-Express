@@ -30,6 +30,19 @@ const userSchema = new mongoose.Schema<IUser>({
     select: false,
     required: [true, "Password field is required"],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  blocked: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
+    default: [],
+  },
 });
 
 // @ts-expect-error

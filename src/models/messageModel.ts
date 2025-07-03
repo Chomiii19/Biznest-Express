@@ -1,26 +1,39 @@
 import mongoose, { Schema } from "mongoose";
+import { IMessage } from "../@types/interfaces";
 
-const messageSchema = new mongoose.Schema({
+const messageSchema = new mongoose.Schema<IMessage>({
   conversation: {
     type: Schema.Types.ObjectId,
     ref: "conversation",
   },
-  recipient: {
-    type: Schema.Types.ObjectId,
-    ref: "user",
+  user: { type: Schema.Types.ObjectId, ref: "user" },
+  content: {
+    type: String,
+    enum: ["text", "image"],
   },
-  latestMessage: String,
-  latestMessageDate: Date,
-  isRead: {
+  isDeleted: {
     type: Boolean,
     default: false,
   },
-  unreadCount: {
-    type: Number,
-    default: 0,
+  isRead: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
+    default: [],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
-const Message = mongoose.model("message", messageSchema);
+messageSchema.index({ conversation: 1 });
+messageSchema.index({ conversation: 1, createdAt: 1 });
+messageSchema.index({ user: 1 });
+
+const Message = mongoose.model<IMessage>("message", messageSchema);
 
 export default Message;

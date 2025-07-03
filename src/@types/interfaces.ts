@@ -6,6 +6,8 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
+  createdAt: Date;
+  blocked: Schema.Types.ObjectId[];
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -37,4 +39,29 @@ export interface IReplies {
   createdAt: Date;
   text: string;
   upvote_count: number;
+}
+
+export interface IConversation extends Document {
+  users: {
+    user: Schema.Types.ObjectId;
+    isHidden: boolean;
+    isMuted: boolean;
+    isRead: boolean;
+    unreadCount: number;
+  }[];
+  latestMessage: string;
+  latestMessageDate: Date;
+}
+
+export interface IMessage extends Document {
+  conversation: Schema.Types.ObjectId;
+  user: Schema.Types.ObjectId;
+  content: {
+    type: "text" | "image";
+    text: string;
+  };
+  image: string;
+  isDeleted: boolean;
+  isRead: Schema.Types.ObjectId[];
+  createdAt: Date;
 }
