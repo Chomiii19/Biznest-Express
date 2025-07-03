@@ -18,4 +18,4 @@ mongoose
       console.log("Successfully connected to port: ", PORT),
     );
   })
-  .catch((err) => console.error("Failed connection to DB: ", err));
+  .catch((err) => console.error("Failed connection to DB:", err));
