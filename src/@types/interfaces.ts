@@ -22,3 +22,19 @@ export interface IPost extends Document {
   size: number;
   address: string;
 }
+
+export interface IComments extends Document {
+  post: Schema.Types.ObjectId;
+  author: Schema.Types.ObjectId;
+  createdAt: Date;
+  text: string;
+  upvote_count: number;
+  replies?: IReplies[];
+}
+
+export interface IReplies {
+  author: Schema.Types.ObjectId;
+  createdAt: Date;
+  text: string;
+  upvote_count: number;
+}
