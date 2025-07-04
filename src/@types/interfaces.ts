@@ -1,6 +1,7 @@
 import { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
+  _id: string;
   firstname: string;
   surname: string;
   username: string;
@@ -8,6 +9,10 @@ export interface IUser extends Document {
   password: string;
   createdAt: Date;
   blocked: Schema.Types.ObjectId[];
+  verificationCode: {
+    code: string;
+    expiresAt: Date;
+  };
   comparePassword(password: string): Promise<boolean>;
 }
 

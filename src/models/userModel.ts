@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema<IUser>({
     type: Date,
     default: Date.now,
   },
+  verificationCode: {
+    code: String,
+    expiresAt: Date,
+  },
   blocked: {
     type: [
       {
