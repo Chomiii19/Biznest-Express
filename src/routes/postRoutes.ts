@@ -1,5 +1,6 @@
 import express from "express";
 import * as postController from "../controllers/postController";
+import uploadPhoto from "../middlewares/uploadPhotoConfig";
 
 const router = express.Router();
 
@@ -17,6 +18,6 @@ router
 router
   .route("/")
   .get(postController.getAllPosts)
-  .post(postController.createPost);
+  .post(uploadPhoto, postController.createPost);
 
 export default router;
