@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import authRoute from "./routes/authRoutes";
+import postRoute from "./routes/postRoutes";
 import AppError from "./utils/appError";
 import globalErrorHandler from "./controllers/globalErrorHandler";
 
@@ -17,6 +18,7 @@ app.use(
 app.use(express.json());
 
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/posts", postRoute);
 app.use("/{*splat}", (req: Request, res: Response, next: NextFunction) =>
   next(new AppError(`Can't find ${req.originalUrl} from the server.`, 404)),
 );
