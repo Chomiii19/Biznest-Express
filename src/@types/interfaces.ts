@@ -8,7 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   createdAt: Date;
-  blocked: Schema.Types.ObjectId[];
+  blocked: string[];
   verificationCode: {
     code: string;
     expiresAt: Date;
