@@ -1,0 +1,16 @@
+export const cities = [
+  "Quezon City",
+  "Makati",
+  "Taguig",
+  "Manila",
+  "Pasig",
+  "San Juan",
+  "Caloocan",
+  "Parañaque",
+  "Mandaluyong",
+  "Las Piñas",
+  "Marikina",
+  "Navotas",
+  "Malabon",
+  "Valenzuela",
+];
