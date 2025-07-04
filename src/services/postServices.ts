@@ -61,7 +61,7 @@ class PostServices {
 
   async createPost(
     userId: string,
-    text: string,
+    description: string,
     address: string,
     size: number,
     proof: string,
@@ -70,7 +70,7 @@ class PostServices {
   ): Promise<IPost | null> {
     const post = await Post.create({
       author: userId,
-      text,
+      description,
       address,
       size,
       proof,
