@@ -8,7 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   createdAt: Date;
-  blocked: Schema.Types.ObjectId[];
+  blocked: string[];
   verificationCode: {
     code: string;
     expiresAt: Date;
@@ -71,6 +71,14 @@ export interface IMessage extends Document {
   isDeleted: boolean;
   isRead: Schema.Types.ObjectId[];
   createdAt: Date;
+}
+
+export interface IUpdateData {
+  username?: string;
+  firstname?: string;
+  surname?: string;
+  email?: string;
+  blocked?: string;
 }
 
 export interface MulterFields {

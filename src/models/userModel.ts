@@ -39,12 +39,7 @@ const userSchema = new mongoose.Schema<IUser>({
     expiresAt: Date,
   },
   blocked: {
-    type: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
-      },
-    ],
+    type: [String],
     default: [],
   },
 });
