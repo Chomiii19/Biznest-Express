@@ -58,6 +58,28 @@ class PostServices {
       hasMore: nextPagePosts.length > 0,
     };
   }
+
+  async createPost(
+    userId: string,
+    text: string,
+    address: string,
+    size: number,
+    proof: string,
+    images_url: string[],
+    price: number | null = null,
+  ): Promise<IPost | null> {
+    const post = await Post.create({
+      author: userId,
+      text,
+      address,
+      size,
+      proof,
+      images_url,
+      price,
+    });
+
+    return post;
+  }
 }
 
 export default new PostServices();

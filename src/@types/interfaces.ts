@@ -22,12 +22,14 @@ export interface IPost extends Document {
   images_url: string[];
   comment_count: number;
   heart_count: number;
-  hasBookmarked: boolean;
-  hasHearted: boolean;
+  hasBookmarked: Schema.Types.ObjectId[];
+  hasHearted: Schema.Types.ObjectId[];
   createdAt: Date;
   price: number | null;
   size: number;
   address: string;
+  proof: string;
+  status: "approved" | "pending" | "deleted";
 }
 
 export interface IComments extends Document {
@@ -69,4 +71,9 @@ export interface IMessage extends Document {
   isDeleted: boolean;
   isRead: Schema.Types.ObjectId[];
   createdAt: Date;
+}
+
+export interface MulterFields {
+  postImages?: Express.Multer.File[];
+  proof?: Express.Multer.File[];
 }

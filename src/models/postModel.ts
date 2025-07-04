@@ -21,12 +21,22 @@ const postSchema = new mongoose.Schema<IPost>({
     default: 0,
   },
   hasBookmarked: {
-    type: Boolean,
-    default: false,
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
+    default: [],
   },
   hasHearted: {
-    type: Boolean,
-    default: false,
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
+    default: [],
   },
   createdAt: {
     type: Date,
@@ -44,6 +54,15 @@ const postSchema = new mongoose.Schema<IPost>({
   address: {
     type: String,
     required: true,
+  },
+  proof: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["approved", "pending", "deleted"],
+    default: "pending",
   },
 });
 

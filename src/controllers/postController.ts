@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import PostServices from "../services/postServices";
+import AppError from "../utils/appError";
+import { MulterFields } from "../@types/interfaces";
 
 const getAllPosts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +13,31 @@ const getAllPosts = catchAsync(
 );
 
 const createPost = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user;
+    const files = req.files as MulterFields;
+    const { description, address, price, size } = req.body;
+
+    if (!description || !address || !size || !files.proof?.[0]?.path)
+      return next(
+        new AppError(
+          "Invalid empty fields for description, address, proof, and size",
+          400,
+        ),
+      );
+
+    const post = await PostServices.createPost(
+      user._id,
+      description,
+      address,
+      size,
+      files.proof?.[0]?.path,
+      files.postImages?.map((file) => file.path) || [],
+      price,
+    );
+
+    res.status(201).json({ status: "Success", post });
+  },
 );
 
 const getPost = catchAsync(

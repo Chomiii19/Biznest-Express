@@ -4,7 +4,7 @@ import { Multer } from "multer";
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser;
+      user: IUser;
       files?: {
         postImages?: Multer.File[];
         proof?: Multer.File[];
