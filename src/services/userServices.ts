@@ -1,7 +1,6 @@
 import { Request } from "express";
-import { IUser } from "../@types/interfaces";
+import { IUser, IUpdateData } from "../@types/interfaces";
 import User from "../models/userModel";
-import AppError from "../utils/appError";
 
 interface NewUserInput {
   firstname: string;
@@ -37,6 +36,27 @@ class UserServices {
   async resetUserPassword(user: IUser, password: string): Promise<void> {
     user.password = password;
     await user.save();
+  }
+
+  async updateUserById(
+    id: string,
+    updateData: IUpdateData,
+  ): Promise<IUser | null> {
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    return updatedUser;
+  }
+
+  async toggleUserBlocklist(id: string, blocked: string): Promise<void> {
+    const user = await User.findById(id);
+
+    if (user?.blocked.includes(blocked)) {
+      await User.findByIdAndUpdate(id, { $pull: { blocked } });
+    } else {
+      await User.findByIdAndUpdate(id, { $addToSet: { blocked } });
+    }
   }
 }
 

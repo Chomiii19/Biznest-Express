@@ -8,4 +8,4 @@ router
   .get(userController.getUser)
   .patch(userController.updateUser);
 
-router.route("/block/:userId").patch(userController.blockUser);
+router.route("/block/:userId").patch(userController.toggleUserBlocklist);

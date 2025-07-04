@@ -73,6 +73,14 @@ export interface IMessage extends Document {
   createdAt: Date;
 }
 
+export interface IUpdateData {
+  username?: string;
+  firstname?: string;
+  surname?: string;
+  email?: string;
+  blocked?: string;
+}
+
 export interface MulterFields {
   postImages?: Express.Multer.File[];
   proof?: Express.Multer.File[];
