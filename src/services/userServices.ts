@@ -52,7 +52,7 @@ class UserServices {
   async toggleUserBlocklist(id: string, blocked: string): Promise<void> {
     const user = await User.findById(id);
 
-    if (user?.blocked.includes(blocked)) {
+    if (user?.blocked.some((id) => id.toString() === blocked)) {
       await User.findByIdAndUpdate(id, { $pull: { blocked } });
     } else {
       await User.findByIdAndUpdate(id, { $addToSet: { blocked } });

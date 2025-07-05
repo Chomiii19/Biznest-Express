@@ -8,7 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   createdAt: Date;
-  blocked: string[];
+  blocked: Schema.Types.ObjectId[];
   verificationCode: {
     code: string;
     expiresAt: Date;
@@ -37,15 +37,17 @@ export interface IComments extends Document {
   author: Schema.Types.ObjectId;
   createdAt: Date;
   text: string;
-  upvote_count: number;
-  replies?: IReplies[];
+  isDeleted: boolean;
+  upvoted_users: Schema.Types.ObjectId[];
 }
 
-export interface IReplies {
+export interface IReplies extends Document {
+  commentId: Schema.Types.ObjectId;
   author: Schema.Types.ObjectId;
   createdAt: Date;
   text: string;
-  upvote_count: number;
+  isDeleted: boolean;
+  upvoted_users: Schema.Types.ObjectId[];
 }
 
 export interface IConversation extends Document {

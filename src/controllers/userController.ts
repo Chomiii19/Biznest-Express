@@ -14,7 +14,7 @@ const getUser = catchAsync(
 
     const user = await UserServices.findUserById(userId as string);
 
-    if (!user || user.blocked.includes(req.user._id)) {
+    if (!user || user?.blocked.some((id) => id.toString() === req.user._id)) {
       return next(new AppError("User not found", 404));
     }
 
