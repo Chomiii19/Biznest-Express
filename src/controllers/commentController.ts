@@ -46,36 +46,29 @@ const updateComment = catchAsync(
     }
 
     if (upvote) {
+      await CommentServices.toggleCommentUpvoteById(req.user._id, commentId);
+
+      res.status(200).json({ status: "Success" });
     }
   },
 );
 
 const deleteComment = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId } = req.params;
+
+    if (!commentId) {
+      return next(new AppError("Comment ID is missing", 400));
+    }
+
+    const deletedComment = CommentServices.deleteCommentById(commentId);
+
+    if (!deletedComment) {
+      return next(new AppError("Comment not found", 404));
+    }
+
+    res.status(200).json({ status: "Success" });
+  },
 );
 
-const getReplies = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
-);
-
-const createReply = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
-);
-
-const updateReply = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
-);
-
-const deleteReply = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
-);
-
-export {
-  getComment,
-  updateComment,
-  deleteComment,
-  getReplies,
-  createReply,
-  updateReply,
-  deleteReply,
-};
+export { getComment, updateComment, deleteComment };
