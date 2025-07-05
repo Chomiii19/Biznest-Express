@@ -11,22 +11,12 @@ const commentSchema = new mongoose.Schema<IComments>({
     ref: "user",
   },
   text: String,
-  upvote_count: {
-    type: Number,
-    default: 0,
-  },
-  replies: {
-    type: [
-      {
-        author: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-        text: String,
-        upvote_count: { type: Number, default: 0 },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
-
-    default: [],
-  },
+  upvoted_users: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
 });
 
