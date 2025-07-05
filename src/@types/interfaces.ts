@@ -37,6 +37,7 @@ export interface IComments extends Document {
   author: Schema.Types.ObjectId;
   createdAt: Date;
   text: string;
+  isDeleted: boolean;
   upvoted_users: Schema.Types.ObjectId[];
 }
 
@@ -45,6 +46,7 @@ export interface IReplies extends Document {
   author: Schema.Types.ObjectId;
   createdAt: Date;
   text: string;
+  isDeleted: boolean;
   upvoted_users: Schema.Types.ObjectId[];
 }
 
