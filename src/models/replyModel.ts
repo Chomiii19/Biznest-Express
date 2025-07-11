@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
-import { IComments } from "../@types/interfaces";
+import { IReplies } from "../@types/interfaces";
 
-const commentSchema = new mongoose.Schema<IComments>({
-  post: {
+const replySchema = new mongoose.Schema<IReplies>({
+  commentId: {
     type: Schema.Types.ObjectId,
-    ref: "post",
+    ref: "comment",
   },
   author: {
     type: Schema.Types.ObjectId,
@@ -24,6 +24,6 @@ const commentSchema = new mongoose.Schema<IComments>({
   createdAt: { type: Date, default: Date.now },
 });
 
-const Comment = mongoose.model<IComments>("comment", commentSchema);
+const Reply = mongoose.model<IReplies>("reply", replySchema);
 
-export default Comment;
+export default Reply;

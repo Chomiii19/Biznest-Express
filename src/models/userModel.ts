@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import { IUser } from "../@types/interfaces";
@@ -38,10 +38,12 @@ const userSchema = new mongoose.Schema<IUser>({
     code: String,
     expiresAt: Date,
   },
-  blocked: {
-    type: [String],
-    default: [],
-  },
+  blocked: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
 });
 
 // @ts-expect-error
