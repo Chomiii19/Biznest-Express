@@ -9,3 +9,5 @@ router
   .patch(userController.updateUser);
 
 router.route("/block/:userId").patch(userController.toggleUserBlocklist);
+
+export default router;
