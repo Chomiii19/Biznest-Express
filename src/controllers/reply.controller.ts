@@ -19,4 +19,4 @@ const deleteReply = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {},
 );
 
-export {};
+export { getReplies, createReply, updateReply, deleteReply };
