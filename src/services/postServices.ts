@@ -1,5 +1,7 @@
-import { IPost } from "../@types/interfaces";
+import { Types } from "mongoose";
+import { IPost, IUser } from "../@types/interfaces";
 import Post from "../models/postModel";
+import AppError from "../utils/appError";
 
 class PostServices {
   async getAllPosts(
@@ -80,6 +82,29 @@ class PostServices {
 
     return post;
   }
-}
 
+  async getPostById(id: string): Promise<IPost | null> {
+    const post = await Post.findById(id).populate("author");
+
+    return post;
+  }
+
+  async getPostByIdAndDelete(userId: string, postId: string): Promise<void> {
+    const post = await Post.findById(postId).populate("author");
+
+    if (!post) throw new AppError("Post not found", 404);
+
+    const authorId =
+      post.author instanceof Types.ObjectId
+        ? post.author
+        : (post.author as IUser)._id;
+
+    if (!authorId.equals(userId)) {
+      throw new AppError("User is not authorized", 400);
+    }
+
+    post.status = "deleted";
+    await post.save();
+  }
+}
 export default new PostServices();

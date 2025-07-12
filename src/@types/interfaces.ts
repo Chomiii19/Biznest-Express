@@ -17,7 +17,8 @@ export interface IUser extends Document {
 }
 
 export interface IPost extends Document {
-  author: Schema.Types.ObjectId;
+  _id: Schema.Types.ObjectId;
+  author: Schema.Types.ObjectId | IUser;
   description: string;
   images_url: string[];
   comment_count: number;

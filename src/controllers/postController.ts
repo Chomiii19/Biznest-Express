@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import PostServices from "../services/postServices";
 import AppError from "../utils/appError";
-import { MulterFields } from "../@types/interfaces";
+import { IUser, MulterFields } from "../@types/interfaces";
+import UserServices from "../services/userServices";
 
 const getAllPosts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -41,7 +42,22 @@ const createPost = catchAsync(
 );
 
 const getPost = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+
+    if (!postId) return next(new AppError("Invalid empty postId", 400));
+
+    const post = await PostServices.getPostById(postId);
+
+    if (
+      !post ||
+      post.status !== "approved" ||
+      (post.author as IUser).blocked.includes(req.user._id)
+    )
+      return next(new AppError("Post not found", 404));
+
+    res.status(200).json({ staus: "Success", data: post });
+  },
 );
 
 const updatePost = catchAsync(
@@ -49,7 +65,15 @@ const updatePost = catchAsync(
 );
 
 const deletePost = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+
+    if (!postId) return next(new AppError("Invalid empty postId", 400));
+
+    await PostServices.getPostByIdAndDelete(req.user._id, postId);
+
+    res.status(200).json({ status: "Successfully deleted" });
+  },
 );
 
 const getAllComments = catchAsync(
