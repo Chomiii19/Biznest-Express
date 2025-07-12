@@ -4,7 +4,7 @@ import * as replyController from "../controllers/reply.controller";
 const router = express.Router();
 
 router
-  .route("/:commentId")
+  .route("/")
   .get(replyController.getReplies)
   .post(replyController.createReply);
 
