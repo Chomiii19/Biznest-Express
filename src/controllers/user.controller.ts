@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
-import UserServices from "../services/userServices";
+import UserServices from "../services/user.service";
 import AppError from "../utils/appError";
 import { IUpdateData } from "../@types/interfaces";
 

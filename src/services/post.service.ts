@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { IPost, IUser } from "../@types/interfaces";
-import Post from "../models/postModel";
+import Post from "../models/post.model";
 import AppError from "../utils/appError";
 
 class PostServices {
@@ -99,6 +99,7 @@ class PostServices {
         ? post.author
         : (post.author as IUser)._id;
 
+    // TO-DO: Fix bugs
     if (!authorId.equals(userId)) {
       throw new AppError("User is not authorized", 400);
     }

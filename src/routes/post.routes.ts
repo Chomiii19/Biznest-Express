@@ -1,5 +1,5 @@
 import express from "express";
-import * as postController from "../controllers/postController";
+import * as postController from "../controllers/post.controller";
 import uploadPhoto from "../middlewares/uploadPhotoConfig";
 
 const router = express.Router();

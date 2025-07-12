@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { IUser, IUpdateData } from "../@types/interfaces";
-import User from "../models/userModel";
+import User from "../models/user.model";
 
 interface NewUserInput {
   firstname: string;

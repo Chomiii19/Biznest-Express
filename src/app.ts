@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
-import authRoute from "./routes/authRoutes";
-import postRoute from "./routes/postRoutes";
+import authRoute from "./routes/auth.routes";
+import postRoute from "./routes/post.routes";
 import AppError from "./utils/appError";
 import globalErrorHandler from "./controllers/globalErrorHandler";
 

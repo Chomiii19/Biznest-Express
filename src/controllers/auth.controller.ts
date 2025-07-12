@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import { OAuth2Client } from "google-auth-library";
-import UserServices from "../services/userServices";
-import AuthServices from "../services/authServices";
+import UserServices from "../services/user.service";
+import AuthServices from "../services/auth.service";
 import sendResetPasswordCode from "../utils/sendResetPasswordCode";
 
 const googleAuth = catchAsync(

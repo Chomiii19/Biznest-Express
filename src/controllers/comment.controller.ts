@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
-import CommentServices from "../services/commentServices";
+import CommentServices from "../services/comment.service";
 
 const getComment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

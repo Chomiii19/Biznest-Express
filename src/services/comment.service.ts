@@ -1,5 +1,5 @@
 import { IComments } from "../@types/interfaces";
-import Comment from "../models/commentModel";
+import Comment from "../models/comment.model";
 
 class CommentServices {
   async findCommentById(id: string): Promise<IComments | null> {
