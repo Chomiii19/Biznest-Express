@@ -4,11 +4,6 @@ import * as replyController from "../controllers/reply.controller";
 const router = express.Router();
 
 router
-  .route("/")
-  .get(replyController.getReplies)
-  .post(replyController.createReply);
-
-router
   .route("/:replyId")
   .patch(replyController.updateReply)
   .delete(replyController.deleteReply);
