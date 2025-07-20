@@ -32,7 +32,20 @@ const getConversation = catchAsync(
 );
 
 const updateMessage = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { messageId } = req.params;
+    const { text } = req.body;
+
+    if (!messageId) return next(new AppError("Invalid empty message id", 400));
+
+    await MessageServices.findMessageByIdAndUpdate(
+      messageId,
+      req.user._id,
+      text,
+    );
+
+    return res.status(200).json({ status: "Success" });
+  },
 );
 
 const deleteMessage = catchAsync(
