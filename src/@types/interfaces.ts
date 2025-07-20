@@ -30,7 +30,7 @@ export interface IPost extends Document {
   size: number;
   address: string;
   proof: string;
-  status: "approved" | "pending" | "deleted";
+  status: "approved" | "pending" | "deleted" | "saved";
 }
 
 export interface IComments extends Document {
