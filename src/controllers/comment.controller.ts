@@ -4,6 +4,24 @@ import AppError from "../utils/appError";
 import CommentServices from "../services/comment.service";
 import ReplyServices from "../services/reply.service";
 
+const getAllComments = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+
+    const data = await CommentServices.findAllCommentsByPostId(
+      postId,
+      req.user,
+      req.query,
+    );
+
+    res.status(200).json({ status: "Success", data });
+  },
+);
+
+const createComment = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {},
+);
+
 const getComment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { commentId } = req.params;
@@ -114,4 +132,12 @@ const createReply = catchAsync(
   },
 );
 
-export { getComment, updateComment, deleteComment, getReplies, createReply };
+export {
+  getAllComments,
+  createComment,
+  getComment,
+  updateComment,
+  deleteComment,
+  getReplies,
+  createReply,
+};
