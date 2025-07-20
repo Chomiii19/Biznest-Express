@@ -60,7 +60,16 @@ const getPost = catchAsync(
 );
 
 const updatePost = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+    const contents = req.body;
+
+    if (!postId) return next(new AppError("Invalid empty postId", 400));
+
+    await PostServices.getPostByIdAndUpdate(req.user._id, postId, contents);
+
+    res.status(200).json({ status: "Post successfully updated" });
+  },
 );
 
 const deletePost = catchAsync(

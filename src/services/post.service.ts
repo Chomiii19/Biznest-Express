@@ -118,11 +118,24 @@ class PostServices {
     return post;
   }
 
+  async getPostByIdAndUpdate(
+    userId: Types.ObjectId,
+    postId: string,
+    contents: IPost,
+  ): Promise<void> {
+    const post = await Post.findOneAndUpdate(
+      { _id: postId, author: userId },
+      contents,
+    );
+
+    if (!post) throw new AppError("Post not found or unauthorized", 404);
+  }
+
   async getPostByIdAndDelete(
     userId: Types.ObjectId,
     postId: string,
   ): Promise<void> {
-    const post = await Post.findById(postId).populate("author");
+    const post = await this.getPostById(postId);
 
     if (!post) throw new AppError("Post not found", 404);
 
@@ -131,9 +144,8 @@ class PostServices {
         ? post.author
         : (post.author as IUser)._id;
 
-    if (!authorId.equals(userId)) {
+    if (!authorId.equals(userId))
       throw new AppError("User is not authorized", 400);
-    }
 
     post.status = "deleted";
     await post.save();
