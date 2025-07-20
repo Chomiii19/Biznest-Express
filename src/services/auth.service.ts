@@ -1,13 +1,14 @@
 import { Response } from "express";
 import signToken from "../utils/signToken";
 import { IUser } from "../@types/interfaces";
+import { Types } from "mongoose";
 
 class AuthServices {
   generateCode(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  createSendToken(id: string, statusCode: number, res: Response) {
+  createSendToken(id: Types.ObjectId, statusCode: number, res: Response) {
     const token = signToken({ id });
     res.status(statusCode).json({ status: "Success", token });
   }

@@ -1,14 +1,14 @@
-import { Document, Schema } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IUser extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   firstname: string;
   surname: string;
   username: string;
   email: string;
   password: string;
   createdAt: Date;
-  blocked: Schema.Types.ObjectId[];
+  blocked: Types.ObjectId[];
   verificationCode: {
     code: string;
     expiresAt: Date;
@@ -17,14 +17,14 @@ export interface IUser extends Document {
 }
 
 export interface IPost extends Document {
-  _id: Schema.Types.ObjectId;
-  author: Schema.Types.ObjectId | IUser;
+  _id: Types.ObjectId;
+  author: Types.ObjectId | IUser;
   description: string;
   images_url: string[];
   comment_count: number;
   heart_count: number;
-  hasBookmarked: Schema.Types.ObjectId[];
-  hasHearted: Schema.Types.ObjectId[];
+  hasBookmarked: Types.ObjectId[];
+  hasHearted: Types.ObjectId[];
   createdAt: Date;
   price: number | null;
   size: number;
@@ -34,26 +34,26 @@ export interface IPost extends Document {
 }
 
 export interface IComments extends Document {
-  post: Schema.Types.ObjectId;
-  author: Schema.Types.ObjectId;
+  post: Types.ObjectId;
+  author: Types.ObjectId;
   createdAt: Date;
   text: string;
   isDeleted: boolean;
-  upvoted_users: Schema.Types.ObjectId[];
+  upvoted_users: Types.ObjectId[];
 }
 
 export interface IReplies extends Document {
-  commentId: Schema.Types.ObjectId;
-  author: Schema.Types.ObjectId;
+  commentId: Types.ObjectId;
+  author: Types.ObjectId;
   createdAt: Date;
   text: string;
   isDeleted: boolean;
-  upvoted_users: Schema.Types.ObjectId[];
+  upvoted_users: Types.ObjectId[];
 }
 
 export interface IConversation extends Document {
   users: {
-    user: Schema.Types.ObjectId;
+    user: Types.ObjectId;
     isHidden: boolean;
     isMuted: boolean;
     isRead: boolean;
@@ -64,15 +64,15 @@ export interface IConversation extends Document {
 }
 
 export interface IMessage extends Document {
-  conversation: Schema.Types.ObjectId;
-  user: Schema.Types.ObjectId;
+  conversation: Types.ObjectId;
+  user: Types.ObjectId;
   content: {
     type: "text" | "image";
     text: string;
   };
   image: string;
   isDeleted: boolean;
-  isRead: Schema.Types.ObjectId[];
+  isRead: Types.ObjectId[];
   createdAt: Date;
 }
 

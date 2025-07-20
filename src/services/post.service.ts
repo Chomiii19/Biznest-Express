@@ -62,7 +62,7 @@ class PostServices {
   }
 
   async createPost(
-    userId: string,
+    userId: Types.ObjectId,
     description: string,
     address: string,
     size: number,
@@ -89,7 +89,10 @@ class PostServices {
     return post;
   }
 
-  async getPostByIdAndDelete(userId: string, postId: string): Promise<void> {
+  async getPostByIdAndDelete(
+    userId: Types.ObjectId,
+    postId: string,
+  ): Promise<void> {
     const post = await Post.findById(postId).populate("author");
 
     if (!post) throw new AppError("Post not found", 404);

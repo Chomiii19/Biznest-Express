@@ -33,17 +33,20 @@ class ReplyServices {
   async createReply(
     commentId: string,
     text: string,
-    author: string,
+    author: Types.ObjectId,
   ): Promise<IReplies | null> {
     const reply = await Reply.create({ commentId, text, author });
 
     return reply;
   }
 
-  async toggleReplyUpvoteById(id: string, replyId: string): Promise<void> {
+  async toggleReplyUpvoteById(
+    id: Types.ObjectId,
+    replyId: string,
+  ): Promise<void> {
     const reply = await Reply.findById(replyId);
 
-    if (reply?.upvoted_users.some((uid) => uid.toString() === id)) {
+    if (reply?.upvoted_users.some((uid) => uid === id)) {
       await Reply.findByIdAndUpdate(replyId, {
         $pull: { upvoted_users: id },
       });

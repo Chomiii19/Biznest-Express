@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { IUser, IUpdateData } from "../@types/interfaces";
 import User from "../models/user.model";
+import { Types } from "mongoose";
 
 interface NewUserInput {
   firstname: string;
@@ -49,7 +50,10 @@ class UserServices {
     return updatedUser;
   }
 
-  async toggleUserBlocklist(id: string, blocked: string): Promise<void> {
+  async toggleUserBlocklist(
+    id: Types.ObjectId,
+    blocked: string,
+  ): Promise<void> {
     const user = await User.findById(id);
 
     if (user?.blocked.some((id) => id.toString() === blocked)) {

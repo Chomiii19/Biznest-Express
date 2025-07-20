@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IComments } from "../@types/interfaces";
 import Comment from "../models/comment.model";
 
@@ -20,10 +21,13 @@ class CommentServices {
     return updatedComment;
   }
 
-  async toggleCommentUpvoteById(id: string, commentId: string): Promise<void> {
+  async toggleCommentUpvoteById(
+    id: Types.ObjectId,
+    commentId: string,
+  ): Promise<void> {
     const comment = await Comment.findById(commentId);
 
-    if (comment?.upvoted_users.some((uid) => uid.toString() === id)) {
+    if (comment?.upvoted_users.some((uid) => uid === id)) {
       await Comment.findByIdAndUpdate(commentId, {
         $pull: { upvoted_users: id },
       });
