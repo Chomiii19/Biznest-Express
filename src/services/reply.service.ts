@@ -1,10 +1,11 @@
-import { IReplies } from "../@types/interfaces";
+import { IReplies, IUser } from "../@types/interfaces";
 import Reply from "../models/reply.model";
-import { Types } from "mongoose";
+import { PipelineStage, Types } from "mongoose";
 
 class ReplyServices {
   async getRepliesByCommentId(
     commentId: string,
+    currentUser: IUser,
     query: any,
   ): Promise<{ replies: IReplies[]; page: number; hasMore: boolean }> {
     const page = parseInt(query.page) || 1;
@@ -13,15 +14,41 @@ class ReplyServices {
     const sortBy = query.sort || "-createdAt";
     const filters = { commentId, isDeleted: false };
 
-    const replies = await Reply.find(filters)
-      .sort(sortBy)
-      .skip(skip)
-      .limit(limit);
+    const basePipeline: PipelineStage[] = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+      { $unwind: "$author" },
+      {
+        $match: {
+          ...filters,
+          "author._id": { $nin: currentUser.blocked },
+          "author.blocked": { $ne: currentUser._id },
+        },
+      },
+      {
+        $sort: {
+          createdAt: sortBy.startsWith("-") ? -1 : 1,
+        },
+      },
+    ];
 
-    const nextPageReplies = await Reply.find(filters)
-      .sort("-createdAt")
-      .skip(skip + limit)
-      .limit(1);
+    const replies = await Reply.aggregate([
+      ...basePipeline,
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    const nextPageReplies = await Reply.aggregate([
+      ...basePipeline,
+      { $skip: skip + limit },
+      { $limit: 1 },
+    ]);
 
     return {
       replies,
