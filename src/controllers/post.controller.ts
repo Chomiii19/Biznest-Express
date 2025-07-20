@@ -3,11 +3,10 @@ import catchAsync from "../utils/catchAsync";
 import PostServices from "../services/post.service";
 import AppError from "../utils/appError";
 import { IUser, MulterFields } from "../@types/interfaces";
-import UserServices from "../services/user.service";
 
 const getAllPosts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const data = await PostServices.getAllPosts(req.query);
+    const data = await PostServices.getAllPosts(req.query, req.user._id);
 
     res.status(200).json({ status: "Success", data });
   },
@@ -41,7 +40,6 @@ const createPost = catchAsync(
   },
 );
 
-// TO-DO: fix big
 const getPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;

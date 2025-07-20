@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { PipelineStage, Types } from "mongoose";
 import { IPost, IUser } from "../@types/interfaces";
 import Post from "../models/post.model";
 import AppError from "../utils/appError";
@@ -6,6 +6,7 @@ import AppError from "../utils/appError";
 class PostServices {
   async getAllPosts(
     query: any,
+    currentUserId: Types.ObjectId,
   ): Promise<{ posts: IPost[]; page: number; hasMore: boolean }> {
     const page = parseInt(query.page) || 1;
     const limit = parseInt(query.limit) || 15;
@@ -47,17 +48,45 @@ class PostServices {
       }
     }
 
-    const posts = await Post.find(filters).sort(sortBy).skip(skip).limit(limit);
+    const basePipeline: PipelineStage[] = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+      { $unwind: "$author" },
+      {
+        $match: {
+          ...filters,
+          "author.blocked": { $ne: currentUserId },
+        },
+      },
+      {
+        $sort: {
+          createdAt: sortBy.startsWith("-") ? -1 : 1,
+        },
+      },
+    ];
 
-    const nextPagePosts = await Post.find(filters)
-      .sort("-createdAt")
-      .skip(skip + limit)
-      .limit(1);
+    const posts = await Post.aggregate([
+      ...basePipeline,
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    const nextPage = await Post.aggregate([
+      ...basePipeline,
+      { $skip: skip + limit },
+      { $limit: 1 },
+    ]);
 
     return {
       posts,
       page,
-      hasMore: nextPagePosts.length > 0,
+      hasMore: nextPage.length > 0,
     };
   }
 
