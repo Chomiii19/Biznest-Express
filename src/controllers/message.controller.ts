@@ -1,6 +1,7 @@
 import { NextFunction, Response, Request } from "express";
 import catchAsync from "../utils/catchAsync";
 import MessageServices from "../services/message.service";
+import AppError from "../utils/appError";
 
 const getAllConversations = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -14,7 +15,20 @@ const getAllConversations = catchAsync(
 );
 
 const getConversation = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { conversationId } = req.params;
+
+    if (!conversationId)
+      return next(new AppError("Invalid empty conversation id", 400));
+
+    const data = await MessageServices.getAllConversationMessages(
+      conversationId,
+      req.user,
+      req.query,
+    );
+
+    res.status(200).json({ staus: "Success", data });
+  },
 );
 
 const updateMessage = catchAsync(
