@@ -2,6 +2,7 @@ import { PipelineStage, Types } from "mongoose";
 import { IConversation, IMessage, IUser } from "../@types/interfaces";
 import Conversation from "../models/conversation.model";
 import Message from "../models/message.model";
+import AppError from "../utils/appError";
 
 class MessageServices {
   async findUserConversations(
@@ -194,6 +195,26 @@ class MessageServices {
       page,
       hasMore: nextPage.length > 0,
     };
+  }
+
+  async findMessageById(messageId: string): Promise<IMessage> {
+    const message = await Message.findById(messageId);
+    if (!message) throw new AppError("Message not found", 404);
+
+    return message;
+  }
+
+  async findMessageByIdAndUpdate(
+    messageId: string,
+    currentUserId: Types.ObjectId,
+    text: string,
+  ): Promise<void> {
+    const message = await Message.findOneAndUpdate(
+      { _id: messageId, user: currentUserId, isDeleted: false },
+      { "content.text": text },
+    );
+
+    if (!message) throw new AppError("Message not found or unauthorized", 404);
   }
 }
 

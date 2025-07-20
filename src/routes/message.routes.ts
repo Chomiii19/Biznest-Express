@@ -4,7 +4,7 @@ import * as messageController from "../controllers/message.controller";
 const router = express.Router();
 
 router
-  .route("/:conversationId/:messageId")
+  .route("/messages/:messageId")
   .patch(messageController.updateMessage)
   .delete(messageController.deleteMessage);
 router.route("/:conversationId").get(messageController.getConversation);
