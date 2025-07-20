@@ -57,6 +57,20 @@ class CommentServices {
     };
   }
 
+  async createComment(
+    postId: string,
+    author: Types.ObjectId,
+    text: string,
+  ): Promise<IComments> {
+    const comment = await Comment.create({
+      post: postId,
+      author,
+      text,
+    });
+
+    return comment;
+  }
+
   async findCommentById(id: string): Promise<IComments | null> {
     const comments = await Comment.findById(id);
     return comments;
