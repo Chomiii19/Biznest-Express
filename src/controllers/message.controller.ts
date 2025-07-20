@@ -49,7 +49,15 @@ const updateMessage = catchAsync(
 );
 
 const deleteMessage = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { messageId } = req.params;
+
+    if (!messageId) return next(new AppError("Invalid empty message id", 400));
+
+    await MessageServices.findByIdAndDelete(req.user._id, messageId);
+
+    return res.status(200).json({ status: "Success" });
+  },
 );
 
 export { getAllConversations, getConversation, updateMessage, deleteMessage };
