@@ -1,6 +1,7 @@
-import { PipelineStage } from "mongoose";
-import { IConversation, IUser } from "../@types/interfaces";
+import { PipelineStage, Types } from "mongoose";
+import { IConversation, IMessage, IUser } from "../@types/interfaces";
 import Conversation from "../models/conversation.model";
+import Message from "../models/message.model";
 
 class MessageServices {
   async findUserConversations(
@@ -118,6 +119,78 @@ class MessageServices {
 
     return {
       conversations,
+      page,
+      hasMore: nextPage.length > 0,
+    };
+  }
+
+  async getAllConversationMessages(
+    conversationId: string,
+    currentUser: IUser,
+    query: any,
+  ): Promise<{
+    messages: IMessage[];
+    page: number;
+    hasMore: boolean;
+  }> {
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 15;
+    const skip = (page - 1) * limit;
+    const sortBy = query.sort || "-createdAt";
+
+    const conversationObjectId = new Types.ObjectId(conversationId);
+
+    const basePipeline: PipelineStage[] = [
+      {
+        $match: {
+          conversation: conversationObjectId,
+        },
+      },
+      {
+        $sort: {
+          createdAt: sortBy.startsWith("-") ? -1 : 1,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $addFields: {
+          "content.text": {
+            $cond: {
+              if: "$isDeleted",
+              then: "This message has been deleted",
+              else: "$content.text",
+            },
+          },
+        },
+      },
+    ];
+
+    const messages: IMessage[] = await Message.aggregate(basePipeline);
+
+    await Message.updateMany(
+      {
+        conversation: conversationObjectId,
+        isRead: { $ne: currentUser._id },
+      },
+      {
+        $addToSet: { isRead: currentUser._id },
+      },
+    );
+
+    const nextPage = await Message.aggregate([
+      { $match: { conversation: conversationObjectId } },
+      { $sort: { createdAt: sortBy.startsWith("-") ? -1 : 1 } },
+      { $skip: skip + limit },
+      { $limit: 1 },
+    ]);
+
+    return {
+      messages,
       page,
       hasMore: nextPage.length > 0,
     };
