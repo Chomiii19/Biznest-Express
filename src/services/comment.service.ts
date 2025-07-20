@@ -1,8 +1,62 @@
-import { Types } from "mongoose";
-import { IComments } from "../@types/interfaces";
+import { PipelineStage, Types } from "mongoose";
+import { IComments, IUser } from "../@types/interfaces";
 import Comment from "../models/comment.model";
 
 class CommentServices {
+  async findAllCommentsByPostId(
+    postId: string,
+    currentUser: IUser,
+    query: any,
+  ): Promise<{ comments: IComments[]; page: number; hasMore: boolean }> {
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 15;
+    const skip = (page - 1) * limit;
+    const sortBy = query.sort || "-createdAt";
+    const filters: any = { postId, isDeleted: false };
+
+    const basePipeline: PipelineStage[] = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+      { $unwind: "$author" },
+      {
+        $match: {
+          ...filters,
+          "author._id": { $nin: currentUser.blocked },
+          "author.blocked": { $ne: currentUser._id },
+        },
+      },
+      {
+        $sort: {
+          createdAt: sortBy.startsWith("-") ? -1 : 1,
+        },
+      },
+    ];
+
+    const comments = await Comment.aggregate([
+      ...basePipeline,
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    const nextPage = await Comment.aggregate([
+      ...basePipeline,
+      { $skip: skip + limit },
+      { $limit: 1 },
+    ]);
+
+    return {
+      comments,
+      page,
+      hasMore: nextPage.length > 0,
+    };
+  }
+
   async findCommentById(id: string): Promise<IComments | null> {
     const comments = await Comment.findById(id);
     return comments;

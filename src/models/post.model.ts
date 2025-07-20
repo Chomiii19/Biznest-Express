@@ -61,7 +61,7 @@ const postSchema = new mongoose.Schema<IPost>({
   },
   status: {
     type: String,
-    enum: ["approved", "pending", "deleted"],
+    enum: ["approved", "pending", "deleted", "saved"],
     default: "pending",
   },
 });

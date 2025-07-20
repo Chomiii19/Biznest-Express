@@ -6,14 +6,14 @@ import AppError from "../utils/appError";
 class PostServices {
   async getAllPosts(
     query: any,
-    currentUserId: Types.ObjectId,
+    currentUser: IUser,
   ): Promise<{ posts: IPost[]; page: number; hasMore: boolean }> {
     const page = parseInt(query.page) || 1;
     const limit = parseInt(query.limit) || 15;
     const skip = (page - 1) * limit;
     const sortBy = query.sort || "-createdAt";
 
-    const filters: any = {};
+    const filters: any = { status: "approved" };
     if (query.search) filters.$text = { $search: query.search };
     if (query.city) filters.address = { $regex: query.city, $options: "i" };
 
@@ -61,7 +61,8 @@ class PostServices {
       {
         $match: {
           ...filters,
-          "author.blocked": { $ne: currentUserId },
+          "author._id": { $nin: currentUser.blocked },
+          "author.blocked": { $ne: currentUser._id },
         },
       },
       {

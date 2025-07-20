@@ -6,7 +6,7 @@ import { IUser, MulterFields } from "../@types/interfaces";
 
 const getAllPosts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const data = await PostServices.getAllPosts(req.query, req.user._id);
+    const data = await PostServices.getAllPosts(req.query, req.user);
 
     res.status(200).json({ status: "Success", data });
   },
@@ -84,20 +84,4 @@ const deletePost = catchAsync(
   },
 );
 
-const getAllComments = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
-);
-
-const createComment = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
-);
-
-export {
-  getAllPosts,
-  createPost,
-  getPost,
-  updatePost,
-  deletePost,
-  getAllComments,
-  createComment,
-};
+export { getAllPosts, createPost, getPost, updatePost, deletePost };
