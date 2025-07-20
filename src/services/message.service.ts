@@ -158,17 +158,6 @@ class MessageServices {
       {
         $limit: limit,
       },
-      {
-        $addFields: {
-          "content.text": {
-            $cond: {
-              if: "$isDeleted",
-              then: "This message has been deleted",
-              else: "$content.text",
-            },
-          },
-        },
-      },
     ];
 
     const messages: IMessage[] = await Message.aggregate(basePipeline);
@@ -215,6 +204,23 @@ class MessageServices {
     );
 
     if (!message) throw new AppError("Message not found or unauthorized", 404);
+  }
+
+  async findByIdAndDelete(
+    userId: Types.ObjectId,
+    messageId: string,
+  ): Promise<void> {
+    const message = await this.findMessageById(messageId);
+
+    if (!message) throw new AppError("Message not found", 404);
+
+    if (!message.user.equals(userId))
+      throw new AppError("User is not authorized", 400);
+
+    message.isDeleted = true;
+    message.content.text = "This message has been deleted";
+    message.content.type = "text";
+    await message.save();
   }
 }
 
