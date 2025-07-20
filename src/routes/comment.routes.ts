@@ -9,4 +9,9 @@ router
   .patch(commentController.updateComment)
   .delete(commentController.deleteComment);
 
+router
+  .route("/:commentId/replies")
+  .get(commentController.getReplies)
+  .post(commentController.createReply);
+
 export default router;
