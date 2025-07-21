@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import http from "http";
 import app from "./app";
 import { Server } from "socket.io";
-import { initSocketServer } from "./socket";
+import { initSocketServer } from "./socketServer";
 
 dotenv.config();
 

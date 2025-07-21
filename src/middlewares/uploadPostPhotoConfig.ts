@@ -38,7 +38,7 @@ const fileFilter = function (
   }
 };
 
-const uploadPhoto = multer({
+const uploadPostPhotoConfig = multer({
   storage,
   fileFilter,
 }).fields([
@@ -46,4 +46,4 @@ const uploadPhoto = multer({
   { name: "proof", maxCount: 1 },
 ]);
 
-export default uploadPhoto;
+export default uploadPostPhotoConfig;

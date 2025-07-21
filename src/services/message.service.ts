@@ -242,21 +242,29 @@ class MessageServices {
     return newConversation._id;
   }
 
-  async createMessage(message: IMessage, usersId: string[]): Promise<IMessage> {
+  async createMessage(
+    message: IMessage,
+    usersId: string[],
+    imagePath: string,
+  ): Promise<IMessage> {
     let conversationId = new Types.ObjectId();
 
     if (!message.conversationId) {
       conversationId = await this.createConversation(usersId);
     }
 
-    const messsage = await Message.create({
+    const content = imagePath
+      ? { type: "image", text: imagePath }
+      : { type: message.content.type, text: message.content.text };
+
+    const newMessage = await Message.create({
       conversationId,
       user: message.user,
-      content: { type: message.content.type, text: message.content.text },
+      content,
       isRead: [message.user],
     });
 
-    return message;
+    return newMessage;
   }
 }
 
