@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import http from "http";
 import app from "./app";
 import { Server } from "socket.io";
-import socketServer from "./socket";
+import { initSocketServer } from "./socket";
 
 dotenv.config();
 
@@ -13,7 +13,6 @@ const DB = `${process.env.DB}`.replace(
   process.env.DB_PASSWORD as string,
 );
 const server = http.createServer(app);
-const io = new Server(server);
 
 mongoose
   .connect(DB)
@@ -22,7 +21,7 @@ mongoose
 
     server.listen(PORT, () => {
       console.log("Successfully connected to port: ", PORT);
-      socketServer(io);
+      initSocketServer(server);
     });
   })
   .catch((err) => console.error("Failed connection to DB:", err));

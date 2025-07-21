@@ -7,7 +7,10 @@ router
   .route("/messages/:messageId")
   .patch(messageController.updateMessage)
   .delete(messageController.deleteMessage);
-router.route("/:conversationId").get(messageController.getConversation);
+router
+  .route("/:conversationId")
+  .get(messageController.getConversation)
+  .post(messageController.sendMessage);
 router.route("/").get(messageController.getAllConversations);
 
 export default router;
