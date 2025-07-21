@@ -71,9 +71,25 @@ class CommentServices {
     return comment;
   }
 
-  async findCommentById(id: string): Promise<IComments | null> {
-    const comments = await Comment.findById(id);
-    return comments;
+  async findCommentById(
+    id: string,
+    currentUser: IUser,
+  ): Promise<IComments | null> {
+    const comment = await Comment.findById(id).populate("author");
+
+    if (!comment || !comment.author || !(comment.author as IUser).blocked) {
+      return null;
+    }
+
+    const author = comment.author as IUser;
+
+    if (
+      !author.blocked.includes(currentUser._id) &&
+      !currentUser.blocked.includes(author._id)
+    )
+      return comment;
+
+    return null;
   }
 
   async updateCommentTextById(

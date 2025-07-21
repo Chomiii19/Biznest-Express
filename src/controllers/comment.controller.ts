@@ -47,7 +47,7 @@ const getComment = catchAsync(
       return next(new AppError("Comment ID is missing", 400));
     }
 
-    const comment = CommentServices.findCommentById(commentId);
+    const comment = CommentServices.findCommentById(commentId, req.user);
 
     if (!comment) {
       return next(
