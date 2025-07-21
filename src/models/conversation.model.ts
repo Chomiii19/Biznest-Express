@@ -26,7 +26,10 @@ const conversationSchema = new mongoose.Schema<IConversation>({
       },
     },
   ],
-  latestMessage: String,
+  latestMessage: {
+    type: String,
+    default: "",
+  },
   latestMessageDate: {
     type: Date,
     default: Date.now,

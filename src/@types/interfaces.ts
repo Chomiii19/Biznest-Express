@@ -52,6 +52,7 @@ export interface IReplies extends Document {
 }
 
 export interface IConversation extends Document {
+  _id: Types.ObjectId;
   users: {
     user: Types.ObjectId;
     isHidden: boolean;
@@ -64,13 +65,12 @@ export interface IConversation extends Document {
 }
 
 export interface IMessage extends Document {
-  conversation: Types.ObjectId;
+  conversationId: Types.ObjectId;
   user: Types.ObjectId;
   content: {
     type: "text" | "image";
     text: string;
   };
-  image: string;
   isDeleted: boolean;
   isRead: Types.ObjectId[];
   createdAt: Date;
