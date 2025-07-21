@@ -63,7 +63,7 @@ Biznest uses open and public datasets from:
 
 ```bash
 # Clone the repository
-git clone https://github.com/Chomiii19/Biznest-Backend(Express).git
+git clone https://github.com/Chomiii19/Biznest-Express.git
 cd biznest
 
 # Install dependencies
