@@ -85,11 +85,12 @@ class ReplyServices {
   }
 
   async updateReplyTextById(
-    id: string,
+    _id: string,
     text: string,
+    currentUser: IUser,
   ): Promise<IReplies | null> {
-    const updatedReply = await Reply.findByIdAndUpdate(
-      id,
+    const updatedReply = await Reply.findOneAndUpdate(
+      { _id, author: currentUser._id },
       { text },
       { new: true },
     );

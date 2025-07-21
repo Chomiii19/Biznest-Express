@@ -35,7 +35,7 @@ export interface IPost extends Document {
 
 export interface IComments extends Document {
   post: Types.ObjectId;
-  author: Types.ObjectId;
+  author: Types.ObjectId | IUser;
   createdAt: Date;
   text: string;
   isDeleted: boolean;

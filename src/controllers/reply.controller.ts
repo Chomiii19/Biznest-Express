@@ -12,7 +12,11 @@ const updateReply = catchAsync(
       return next(new AppError("new text or Vote action is missing", 400));
     }
 
-    const updatedReply = await ReplyServices.updateReplyTextById(replyId, text);
+    const updatedReply = await ReplyServices.updateReplyTextById(
+      replyId,
+      text,
+      req.user,
+    );
 
     if (!updatedReply) {
       return next(new AppError("Reply not found", 400));
