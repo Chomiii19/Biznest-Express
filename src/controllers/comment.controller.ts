@@ -71,6 +71,7 @@ const updateComment = catchAsync(
     const updatedComment = await CommentServices.updateCommentTextById(
       commentId,
       text,
+      req.user,
     );
 
     if (!updatedComment) {

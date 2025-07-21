@@ -93,11 +93,12 @@ class CommentServices {
   }
 
   async updateCommentTextById(
-    id: string,
+    _id: string,
     text: string,
+    currentUser: IUser,
   ): Promise<IComments | null> {
-    const updatedComment = await Comment.findByIdAndUpdate(
-      id,
+    const updatedComment = await Comment.findOneAndUpdate(
+      { _id, author: currentUser._id },
       { text },
       { new: true },
     );
