@@ -8,7 +8,7 @@ const messageSchema = new mongoose.Schema<IMessage>({
   },
   user: { type: Schema.Types.ObjectId, ref: "user" },
   content: {
-    type: { type: String, enum: ["text", "image"] },
+    type: { type: String, enum: ["text", "image"], default: "text" },
     text: { type: String, require: true },
   },
   isDeleted: {

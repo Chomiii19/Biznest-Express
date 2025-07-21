@@ -9,6 +9,7 @@ declare global {
         postImages?: Multer.File[];
         proof?: Multer.File[];
       };
+      file?: Multer.File;
     }
   }
 }

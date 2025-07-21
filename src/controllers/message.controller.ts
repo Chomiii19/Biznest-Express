@@ -2,6 +2,7 @@ import { NextFunction, Response, Request } from "express";
 import catchAsync from "../utils/catchAsync";
 import MessageServices from "../services/message.service";
 import AppError from "../utils/appError";
+import { activeUsers, getIO } from "../socketServer";
 
 const getAllConversations = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -11,6 +12,35 @@ const getAllConversations = catchAsync(
     );
 
     res.status(200).json({ status: "Success", data });
+  },
+);
+
+const sendMessage = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { usersId, message } = req.body;
+    const io = getIO();
+
+    if (!message.content?.text?.trim())
+      return next(new AppError("Invalid empty text", 400));
+
+    const savedMessage = await MessageServices.createMessage(
+      message,
+      usersId,
+      req.file?.path ?? "",
+    );
+
+    for (const userId of usersId) {
+      const userSocket = activeUsers.find((u) => u.userId === userId);
+
+      if (userSocket) {
+        io.to(userSocket.socketId).emit("receive-message", {
+          message: savedMessage,
+          usersId,
+        });
+      }
+    }
+
+    res.status(200).json({ status: "Success" });
   },
 );
 
@@ -60,4 +90,10 @@ const deleteMessage = catchAsync(
   },
 );
 
-export { getAllConversations, getConversation, updateMessage, deleteMessage };
+export {
+  getAllConversations,
+  sendMessage,
+  getConversation,
+  updateMessage,
+  deleteMessage,
+};
