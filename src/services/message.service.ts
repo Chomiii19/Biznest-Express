@@ -197,19 +197,21 @@ class MessageServices {
     messageId: string,
     currentUserId: Types.ObjectId,
     text: string,
-  ): Promise<void> {
+  ): Promise<IMessage> {
     const message = await Message.findOneAndUpdate(
       { _id: messageId, user: currentUserId, isDeleted: false },
       { "content.text": text },
     );
 
     if (!message) throw new AppError("Message not found or unauthorized", 404);
+
+    return message;
   }
 
   async findByIdAndDelete(
     userId: Types.ObjectId,
     messageId: string,
-  ): Promise<void> {
+  ): Promise<IMessage> {
     const message = await this.findMessageById(messageId);
 
     if (!message) throw new AppError("Message not found", 404);
@@ -221,6 +223,8 @@ class MessageServices {
     message.content.text = "This message has been deleted";
     message.content.type = "text";
     await message.save();
+
+    return message;
   }
 
   async createConversation(usersId: string[]): Promise<Types.ObjectId> {

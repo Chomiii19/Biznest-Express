@@ -64,15 +64,33 @@ const getConversation = catchAsync(
 const updateMessage = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { messageId } = req.params;
-    const { text } = req.body;
+    const { text, usersId } = req.body;
+    const io = getIO();
 
-    if (!messageId) return next(new AppError("Invalid empty message id", 400));
+    if (!messageId?.trim())
+      return next(new AppError("Invalid message ID", 400));
 
-    await MessageServices.findMessageByIdAndUpdate(
+    if (!text?.trim()) return next(new AppError("Invalid empty text", 400));
+
+    const message = await MessageServices.findMessageByIdAndUpdate(
       messageId,
       req.user._id,
       text,
     );
+
+    for (const userId of usersId) {
+      const userSocket = activeUsers.find((u) => u.userId === userId);
+
+      if (userSocket) {
+        io.to(userSocket.socketId).emit("update-message", {
+          message: {
+            messageId: message._id,
+            text: message.content.text,
+          },
+          usersId,
+        });
+      }
+    }
 
     return res.status(200).json({ status: "Success" });
   },
@@ -81,10 +99,32 @@ const updateMessage = catchAsync(
 const deleteMessage = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { messageId } = req.params;
+    const { usersId } = req.query;
+    const io = getIO();
 
     if (!messageId) return next(new AppError("Invalid empty message id", 400));
 
-    await MessageServices.findByIdAndDelete(req.user._id, messageId);
+    const message = await MessageServices.findByIdAndDelete(
+      req.user._id,
+      messageId,
+    );
+
+    for (const userId of [usersId]) {
+      const userSocket = activeUsers.find((u) => u.userId === userId);
+
+      if (userSocket) {
+        io.to(userSocket.socketId).emit("delete-message", {
+          message: {
+            messageId: message._id,
+            content: {
+              type: message.content.type,
+              text: message.content.text,
+            },
+          },
+          usersId,
+        });
+      }
+    }
 
     return res.status(200).json({ status: "Success" });
   },
