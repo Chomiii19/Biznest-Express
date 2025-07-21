@@ -88,3 +88,12 @@ export interface MulterFields {
   postImages?: Express.Multer.File[];
   proof?: Express.Multer.File[];
 }
+
+export interface IBookmark {
+  userId: Types.ObjectId;
+  coords: {
+    lat: number;
+    lng: number;
+  };
+  notes: string;
+}
