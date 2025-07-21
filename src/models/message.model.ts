@@ -2,14 +2,14 @@ import mongoose, { Schema } from "mongoose";
 import { IMessage } from "../@types/interfaces";
 
 const messageSchema = new mongoose.Schema<IMessage>({
-  conversation: {
+  conversationId: {
     type: Schema.Types.ObjectId,
     ref: "conversation",
   },
   user: { type: Schema.Types.ObjectId, ref: "user" },
   content: {
-    type: String,
-    enum: ["text", "image"],
+    type: { type: String, enum: ["text", "image"] },
+    text: { type: String, require: true },
   },
   isDeleted: {
     type: Boolean,
