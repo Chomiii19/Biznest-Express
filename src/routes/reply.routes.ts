@@ -8,4 +8,6 @@ router
   .patch(replyController.updateReply)
   .delete(replyController.deleteReply);
 
+router.route("/:replyId/toggle-upvote").patch(replyController.toggleUpvote);
+
 export default router;

@@ -6,30 +6,29 @@ import ReplyServices from "../services/reply.service";
 const updateReply = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { replyId } = req.params;
-    const { text, upvote } = req.body;
+    const { text } = req.body;
 
-    if (!text && !upvote) {
+    if (!text) {
       return next(new AppError("new text or Vote action is missing", 400));
     }
 
-    if (text) {
-      const updatedReply = await ReplyServices.updateReplyTextById(
-        replyId,
-        text,
-      );
+    const updatedReply = await ReplyServices.updateReplyTextById(replyId, text);
 
-      if (!updatedReply) {
-        return next(new AppError("Reply not found", 400));
-      }
-
-      res.status(200).json({ status: "Success", data: { updatedReply } });
+    if (!updatedReply) {
+      return next(new AppError("Reply not found", 400));
     }
 
-    if (upvote) {
-      await ReplyServices.toggleReplyUpvoteById(req.user._id, replyId);
+    res.status(200).json({ status: "Success", data: { updatedReply } });
+  },
+);
 
-      res.status(200).json({ status: "Success" });
-    }
+const toggleUpvote = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { replyId } = req.params;
+
+    await ReplyServices.toggleReplyUpvoteById(req.user._id, replyId);
+
+    res.status(200).json({ status: "Success" });
   },
 );
 
@@ -51,4 +50,4 @@ const deleteReply = catchAsync(
   },
 );
 
-export { updateReply, deleteReply };
+export { updateReply, deleteReply, toggleUpvote };
