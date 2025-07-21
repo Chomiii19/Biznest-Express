@@ -125,7 +125,7 @@ class MessageServices {
     };
   }
 
-  async getAllConversationMessages(
+  async findAllConversationMessages(
     conversationId: string,
     currentUser: IUser,
     query: any,
@@ -221,6 +221,42 @@ class MessageServices {
     message.content.text = "This message has been deleted";
     message.content.type = "text";
     await message.save();
+  }
+
+  async createConversation(usersId: string[]): Promise<Types.ObjectId> {
+    const conversation = await Conversation.findOne({
+      $and: usersId.map((id) => ({
+        "users.user": new Types.ObjectId(id),
+      })),
+      users: { $size: usersId.length },
+    });
+
+    if (conversation) return conversation._id;
+
+    const newConversation = await Conversation.create({
+      users: usersId.map((id) => ({
+        user: new Types.ObjectId(id),
+      })),
+    });
+
+    return newConversation._id;
+  }
+
+  async createMessage(message: IMessage, usersId: string[]): Promise<IMessage> {
+    let conversationId = new Types.ObjectId();
+
+    if (!message.conversationId) {
+      conversationId = await this.createConversation(usersId);
+    }
+
+    const messsage = await Message.create({
+      conversationId,
+      user: message.user,
+      content: { type: message.content.type, text: message.content.text },
+      isRead: [message.user],
+    });
+
+    return message;
   }
 }
 

@@ -21,7 +21,7 @@ const getConversation = catchAsync(
     if (!conversationId)
       return next(new AppError("Invalid empty conversation id", 400));
 
-    const data = await MessageServices.getAllConversationMessages(
+    const data = await MessageServices.findAllConversationMessages(
       conversationId,
       req.user,
       req.query,
