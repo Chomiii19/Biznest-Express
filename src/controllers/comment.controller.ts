@@ -62,30 +62,32 @@ const getComment = catchAsync(
 const updateComment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { commentId } = req.params;
-    const { text, upvote } = req.body;
+    const { text } = req.body;
 
-    if (!text && !upvote) {
+    if (!text) {
       return next(new AppError("new text or Vote action is missing", 400));
     }
 
-    if (text) {
-      const updatedComment = await CommentServices.updateCommentTextById(
-        commentId,
-        text,
-      );
+    const updatedComment = await CommentServices.updateCommentTextById(
+      commentId,
+      text,
+    );
 
-      if (!updatedComment) {
-        return next(new AppError("Failed to update comment", 400));
-      }
-
-      res.status(200).json({ status: "Success", data: { updatedComment } });
+    if (!updatedComment) {
+      return next(new AppError("Failed to update comment", 400));
     }
 
-    if (upvote) {
-      await CommentServices.toggleCommentUpvoteById(req.user._id, commentId);
+    res.status(200).json({ status: "Success", data: { updatedComment } });
+  },
+);
 
-      res.status(200).json({ status: "Success" });
-    }
+const toggleUpvote = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId } = req.params;
+
+    await CommentServices.toggleCommentUpvoteById(req.user._id, commentId);
+
+    res.status(200).json({ status: "Success" });
   },
 );
 
@@ -117,6 +119,7 @@ const getReplies = catchAsync(
 
     const comment = await ReplyServices.getRepliesByCommentId(
       commentId,
+      req.user,
       req.query,
     );
 
@@ -157,4 +160,5 @@ export {
   deleteComment,
   getReplies,
   createReply,
+  toggleUpvote,
 };
