@@ -33,19 +33,28 @@ class LocationServices {
     bookmarkId: string,
     coords: { lat: number; lng: number },
     notes: string,
+    userId: Types.ObjectId,
   ): Promise<void> {
-    const updated = await Bookmark.findByIdAndUpdate(
-      bookmarkId,
-      { coords, notes },
-      { new: true, runValidators: true },
-    );
+    const bookmark = await Bookmark.findOne({ _id: bookmarkId, userId });
 
-    if (!updated) throw new AppError("Bookmark not found", 404);
+    if (!bookmark)
+      throw new AppError("Bookmark not found or unauthorized", 404);
+
+    bookmark.coords = coords;
+    bookmark.notes = notes;
+    await bookmark.save();
   }
 
-  async deleteBookmarkById(bookmarkId: string): Promise<void> {
-    const deleted = await Bookmark.findByIdAndDelete(bookmarkId);
-    if (!deleted) throw new AppError("Bookmark not found", 404);
+  async deleteBookmarkById(
+    bookmarkId: string,
+    userId: Types.ObjectId,
+  ): Promise<void> {
+    const deleted = await Bookmark.findOneAndDelete({
+      _id: bookmarkId,
+      userId,
+    });
+
+    if (!deleted) throw new AppError("Bookmark not found or unauthorized", 404);
   }
 }
 

@@ -38,7 +38,12 @@ const updateBookmark = catchAsync(
     if (!coords.lat && !coords.lng)
       return next(new AppError("Invalid empty coordinates", 400));
 
-    await LocationServices.updateBookmarkById(bookmarkId, coords, notes);
+    await LocationServices.updateBookmarkById(
+      bookmarkId,
+      coords,
+      notes,
+      req.user._id,
+    );
 
     res.status(200).json({ status: "Success" });
   },
@@ -51,7 +56,7 @@ const deleteBookmark = catchAsync(
     if (!bookmarkId)
       return next(new AppError("Invalid empty bookmark id", 404));
 
-    await LocationServices.deleteBookmarkById(bookmarkId);
+    await LocationServices.deleteBookmarkById(bookmarkId, req.user._id);
 
     res.status(200).json({ status: "Success" });
   },
