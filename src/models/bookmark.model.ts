@@ -16,7 +16,10 @@ const bookmarkSchema = new mongoose.Schema<IBookmark>({
       require: true,
     },
   },
-  notes: String,
+  notes: {
+    type: String,
+    default: "",
+  },
 });
 
 const Bookmark = mongoose.model<IBookmark>("bookmark", bookmarkSchema);
