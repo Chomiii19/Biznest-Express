@@ -78,7 +78,7 @@ const computeLocationScore = catchAsync(
       return next(new AppError("Missing query parameters", 400));
     }
 
-    const weights = req.body.weights || {};
+    const weights = req.body?.weights ?? {};
 
     const result = await LocationServices.getCombinedLocationScore(
       Number(lat),
