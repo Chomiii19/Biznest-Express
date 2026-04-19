@@ -70,6 +70,30 @@ const summary = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {},
 );
 
+const computeLocationScore = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { lat, lon, amenityType } = req.query;
+
+    if (!lat || !lon || !amenityType) {
+      return next(new AppError("Missing query parameters", 400));
+    }
+
+    const weights = req.body.weights || {};
+
+    const result = await LocationServices.getCombinedLocationScore(
+      Number(lat),
+      Number(lon),
+      String(amenityType),
+      weights,
+    );
+
+    res.status(200).json({
+      status: "Success",
+      data: result,
+    });
+  },
+);
+
 export {
   getAllBookmarks,
   createBookmark,
@@ -77,4 +101,5 @@ export {
   deleteBookmark,
   nearbyPosts,
   summary,
+  computeLocationScore,
 };

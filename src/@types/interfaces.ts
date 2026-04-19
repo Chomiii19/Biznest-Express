@@ -97,3 +97,24 @@ export interface IBookmark {
   };
   notes: string;
 }
+
+export interface IScoreWeights {
+  flood?: number;
+  environment?: number;
+  demographic?: number;
+}
+
+export interface ICombinedScoreResult {
+  finalScore: number;
+
+  floodScore: number;
+  environmentScore: number;
+
+  demographicScore?: number;
+
+  details: {
+    environment: any;
+    flood: any;
+    demographic: any;
+  };
+}

@@ -1,7 +1,12 @@
 import { Types } from "mongoose";
 import Bookmark from "../models/bookmark.model";
 import AppError from "../utils/appError";
-import { IBookmark } from "../@types/interfaces";
+import {
+  IBookmark,
+  ICombinedScoreResult,
+  IScoreWeights,
+} from "../@types/interfaces";
+import axios from "axios";
 
 class LocationServices {
   async findAllUseBookmarks(userId: Types.ObjectId): Promise<IBookmark[]> {
@@ -55,6 +60,72 @@ class LocationServices {
     });
 
     if (!deleted) throw new AppError("Bookmark not found or unauthorized", 404);
+  }
+
+  async getCombinedLocationScore(
+    lat: number,
+    lon: number,
+    amenityType: string,
+    weights: IScoreWeights = {},
+  ): Promise<ICombinedScoreResult> {
+    const wFlood = weights.flood ?? 0.5;
+    const wEnv = weights.environment ?? 0.3;
+    const wDemo = weights.demographic ?? 0.2; // reserved for future
+
+    try {
+      // ENVIRONMENT SIMILARITY
+      const envRes = await axios.get(
+        "https://renewably-pushy-preachy.ngrok-free.dev/generate",
+        {
+          params: {
+            lat,
+            lon,
+            amenity_type: `"${amenityType}"`,
+          },
+        },
+      );
+
+      const environmentScore = envRes.data?.similarity_score ?? 0;
+
+      // FLOOD RISK SCORE
+      const floodRes = await axios.get(
+        "https://mrc-flood-score.onrender.com/generate",
+        {
+          params: { lat, lon },
+        },
+      );
+
+      const rawFloodRisk = floodRes.data?.flood_risk_score ?? 0;
+
+      // invert risk → higher is better
+      const floodScore = 1 - rawFloodRisk;
+
+      // DEMOGRAPHIC SCORE
+      const demographicScore = 0; // placeholder
+
+      // 4. FINAL WEIGHTED SCORE
+      const finalScore =
+        wFlood * floodScore +
+        wEnv * environmentScore +
+        wDemo * demographicScore;
+
+      return {
+        finalScore,
+        floodScore,
+        environmentScore,
+        demographicScore,
+        details: {
+          environment: envRes.data,
+          flood: floodRes.data,
+          demographic: demographicScore,
+        },
+      };
+    } catch (err: any) {
+      throw new AppError(
+        err?.response?.data?.message || "Failed to compute location score",
+        500,
+      );
+    }
   }
 }
 

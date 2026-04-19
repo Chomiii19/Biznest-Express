@@ -4,14 +4,15 @@ import * as locationController from "../controllers/location.controller";
 const router = express.Router();
 
 router
-  .route("/locations/bookmarks")
+  .route("/bookmarks")
   .get(locationController.getAllBookmarks)
   .post(locationController.createBookmark);
 router
-  .route("/locations/bookmarks/:bookmarkId")
+  .route("/bookmarks/:bookmarkId")
   .patch(locationController.updateBookmark)
   .delete(locationController.deleteBookmark);
-router.route("/locations/nearby-posts").get(locationController.nearbyPosts);
-router.route("/location/summary").get(locationController.summary);
+router.route("/nearby-posts").get(locationController.nearbyPosts);
+router.route("/summary").get(locationController.summary);
+router.route("/score").post(locationController.computeLocationScore);
 
 export default router;
