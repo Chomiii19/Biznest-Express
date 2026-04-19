@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import LocationServices from "../services/location.service";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
+import { IScoreWeights } from "../@types/interfaces";
 
 const getAllBookmarks = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -72,13 +73,19 @@ const summary = catchAsync(
 
 const computeLocationScore = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { lat, lon, amenityType } = req.query;
+    const { lat, lon, amenityType, wEnvironment, wFlood, wDemographic } =
+      req.query;
 
     if (!lat || !lon || !amenityType) {
       return next(new AppError("Missing query parameters", 400));
     }
 
-    const weights = req.body?.weights ?? {};
+    // Parse weights from query params (frontend sends these as wEnvironment, wFlood, wDemographic)
+    const weights: IScoreWeights = {
+      environment: wEnvironment ? Number(wEnvironment) : undefined,
+      flood: wFlood ? Number(wFlood) : undefined,
+      demographic: wDemographic ? Number(wDemographic) : undefined,
+    };
 
     const result = await LocationServices.getCombinedLocationScore(
       Number(lat),

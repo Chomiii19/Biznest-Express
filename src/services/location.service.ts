@@ -70,7 +70,7 @@ class LocationServices {
   ): Promise<ICombinedScoreResult> {
     const wFlood = weights.flood ?? 0.5;
     const wEnv = weights.environment ?? 0.3;
-    const wDemo = weights.demographic ?? 0.2; // reserved for future
+    const wDemo = weights.demographic ?? 0.2;
 
     try {
       // ENVIRONMENT SIMILARITY
@@ -84,26 +84,25 @@ class LocationServices {
           },
         },
       );
-
-      const environmentScore = envRes.data?.similarity_score ?? 0;
+      const environmentScore: number = envRes.data?.similarity_score ?? 0;
 
       // FLOOD RISK SCORE
       const floodRes = await axios.get(
         "https://mrc-flood-score.onrender.com/generate",
-        {
-          params: { lat, lon },
-        },
+        { params: { lat, lon } },
       );
-
-      const rawFloodRisk = floodRes.data?.flood_risk_score ?? 0;
-
-      // invert risk → higher is better
+      const rawFloodRisk: number = floodRes.data?.flood_risk_score ?? 0;
       const floodScore = 1 - rawFloodRisk;
 
-      // DEMOGRAPHIC SCORE
-      const demographicScore = 0; // placeholder
+      // DEMOGRAPHIC SCORE — POST with JSON body, extract the numeric score
+      const demoRes = await axios.post(
+        "https://biznest-demographics-evaluation.onrender.com/evaluate",
+        { lat, lng: lon }, // ← JSON body, not params
+      );
+      const demographicScore: number =
+        demoRes.data?.overall_demographic_score ?? 0; // ← extract the number
 
-      // 4. FINAL WEIGHTED SCORE
+      // FINAL WEIGHTED SCORE
       const finalScore =
         wFlood * floodScore +
         wEnv * environmentScore +
@@ -117,7 +116,7 @@ class LocationServices {
         details: {
           environment: envRes.data,
           flood: floodRes.data,
-          demographic: demographicScore,
+          demographic: demoRes.data, // ← full response object for details
         },
       };
     } catch (err: any) {
