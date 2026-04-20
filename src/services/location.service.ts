@@ -72,9 +72,10 @@ class LocationServices {
     const wEnv = weights.environment ?? 0.3;
     const wDemo = weights.demographic ?? 0.2;
 
+    // ENVIRONMENT SIMILARITY
+    let envRes: any;
     try {
-      // ENVIRONMENT SIMILARITY
-      const envRes = await axios.get(
+      envRes = await axios.get(
         "https://renewably-pushy-preachy.ngrok-free.dev/generate",
         {
           params: {
@@ -84,47 +85,73 @@ class LocationServices {
           },
         },
       );
-      const environmentScore: number = envRes.data?.similarity_score ?? 0;
-
-      // FLOOD RISK SCORE
-      const floodRes = await axios.get(
-        "https://mrc-flood-score.onrender.com/generate",
-        { params: { lat, lon } },
-      );
-      const rawFloodRisk: number = floodRes.data?.flood_risk_score ?? 0;
-      const floodScore = 1 - rawFloodRisk;
-
-      // DEMOGRAPHIC SCORE — POST with JSON body, extract the numeric score
-      const demoRes = await axios.post(
-        "https://biznest-demographics-evaluation.onrender.com/evaluate",
-        { lat, lng: lon }, // ← JSON body, not params
-      );
-      const demographicScore: number =
-        demoRes.data?.overall_demographic_score ?? 0; // ← extract the number
-
-      // FINAL WEIGHTED SCORE
-      const finalScore =
-        wFlood * floodScore +
-        wEnv * environmentScore +
-        wDemo * demographicScore;
-
-      return {
-        finalScore,
-        floodScore,
-        environmentScore,
-        demographicScore,
-        details: {
-          environment: envRes.data,
-          flood: floodRes.data,
-          demographic: demoRes.data, // ← full response object for details
-        },
-      };
     } catch (err: any) {
+      console.error(
+        `[Environment API] Failed for lat: ${lat}, lon: ${lon} —`,
+        err?.response?.data || err.message,
+      );
       throw new AppError(
-        err?.response?.data?.message || "Failed to compute location score",
+        err?.response?.data?.message || "Failed to fetch environment score",
         500,
       );
     }
+    const environmentScore: number = envRes.data?.similarity_score ?? 0;
+
+    // FLOOD RISK SCORE
+    let floodRes: any;
+    try {
+      floodRes = await axios.get(
+        "https://mrc-flood-score.onrender.com/generate",
+        { params: { lat, lon } },
+      );
+    } catch (err: any) {
+      console.error(
+        `[Flood API] Failed for lat: ${lat}, lon: ${lon} —`,
+        err?.response?.data || err.message,
+      );
+      throw new AppError(
+        err?.response?.data?.message || "Failed to fetch flood risk score",
+        500,
+      );
+    }
+    const rawFloodRisk: number = floodRes.data?.flood_risk_score ?? 0;
+    const floodScore = 1 - rawFloodRisk;
+
+    // DEMOGRAPHIC SCORE
+    let demoRes: any;
+    try {
+      demoRes = await axios.post(
+        "https://biznest-demographics-evaluation.onrender.com/evaluate",
+        { lat, lng: lon },
+      );
+    } catch (err: any) {
+      console.error(
+        `[Demographic API] Failed for lat: ${lat}, lon: ${lon} —`,
+        err?.response?.data || err.message,
+      );
+      throw new AppError(
+        err?.response?.data?.message || "Failed to fetch demographic score",
+        500,
+      );
+    }
+    const demographicScore: number =
+      demoRes.data?.overall_demographic_score ?? 0;
+
+    // FINAL WEIGHTED SCORE
+    const finalScore =
+      wFlood * floodScore + wEnv * environmentScore + wDemo * demographicScore;
+
+    return {
+      finalScore,
+      floodScore,
+      environmentScore,
+      demographicScore,
+      details: {
+        environment: envRes.data,
+        flood: floodRes.data,
+        demographic: demoRes.data,
+      },
+    };
   }
 }
 
