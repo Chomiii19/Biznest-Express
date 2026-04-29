@@ -70,7 +70,6 @@ class LocationServices {
   ): Promise<ICombinedScoreResult> {
     const wFlood = weights.flood ?? 0.5;
     const wEnv = weights.environment ?? 0.3;
-    const wDemo = weights.demographic ?? 0.2;
 
     // ENVIRONMENT SIMILARITY
     let envRes: any;
@@ -117,39 +116,16 @@ class LocationServices {
     const rawFloodRisk: number = floodRes.data?.flood_risk_score ?? 0;
     const floodScore = 1 - rawFloodRisk;
 
-    // DEMOGRAPHIC SCORE
-    let demoRes: any;
-    try {
-      demoRes = await axios.post(
-        "https://biznest-demographics-evaluation.onrender.com/evaluate",
-        { lat, lng: lon },
-      );
-    } catch (err: any) {
-      console.error(
-        `[Demographic API] Failed for lat: ${lat}, lon: ${lon} —`,
-        err?.response?.data || err.message,
-      );
-      throw new AppError(
-        err?.response?.data?.message || "Failed to fetch demographic score",
-        500,
-      );
-    }
-    const demographicScore: number =
-      demoRes.data?.overall_demographic_score ?? 0;
-
     // FINAL WEIGHTED SCORE
-    const finalScore =
-      wFlood * floodScore + wEnv * environmentScore + wDemo * demographicScore;
+    const finalScore = wFlood * floodScore + wEnv * environmentScore;
 
     return {
       finalScore,
       floodScore,
       environmentScore,
-      demographicScore,
       details: {
         environment: envRes.data,
         flood: floodRes.data,
-        demographic: demoRes.data,
       },
     };
   }

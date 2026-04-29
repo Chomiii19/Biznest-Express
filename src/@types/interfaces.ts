@@ -110,11 +110,8 @@ export interface ICombinedScoreResult {
   floodScore: number;
   environmentScore: number;
 
-  demographicScore?: number;
-
   details: {
     environment: any;
     flood: any;
-    demographic: any;
   };
 }

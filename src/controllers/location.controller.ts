@@ -73,8 +73,7 @@ const summary = catchAsync(
 
 const computeLocationScore = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { lat, lon, amenityType, wEnvironment, wFlood, wDemographic } =
-      req.query;
+    const { lat, lon, amenityType, wEnvironment, wFlood } = req.query;
 
     if (!lat || !lon || !amenityType) {
       return next(new AppError("Missing query parameters", 400));
@@ -84,7 +83,6 @@ const computeLocationScore = catchAsync(
     const weights: IScoreWeights = {
       environment: wEnvironment ? Number(wEnvironment) : undefined,
       flood: wFlood ? Number(wFlood) : undefined,
-      demographic: wDemographic ? Number(wDemographic) : undefined,
     };
 
     const result = await LocationServices.getCombinedLocationScore(
